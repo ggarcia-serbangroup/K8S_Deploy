@@ -1,0 +1,37 @@
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: elastic-search
+  namespace: ntnx-system
+spec:
+  version: 9.4.3
+  nodeSets:
+  - name: default
+    count: 1
+    config:
+      node.roles: ["master", "data", "data_content", "data_hot", "ingest", "remote_cluster_client"]
+      node.store.allow_mmap: true
+    podTemplate:
+      spec:
+        containers:
+        - name: elasticsearch
+          env:
+          - name: ES_JAVA_OPTS
+            value: "-Xms2g -Xmx2g"
+          resources:
+            requests:
+              cpu: "1"
+              memory: 4Gi
+            limits:
+              cpu: "2"
+              memory: 4Gi
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        storageClassName: elastic-nutanix-ssd
+        resources:
+          requests:
+            storage: 50Gi
