@@ -11,3 +11,7 @@ parameters:
   # Fuerza el uso de rendimiento SSD en la cabina Nutanix
   flashMode: "true" 
   storageType: NutanixVolumes
+  csi.storage.k8s.io/provisioner-secret-name: ntnx-secret
+  csi.storage.k8s.io/provisioner-secret-namespace: ntnx-system
+  csi.storage.k8s.io/node-publish-secret-name: ntnx-secret
+  csi.storage.k8s.io/node-publish-secret-namespace: ntnx-system
