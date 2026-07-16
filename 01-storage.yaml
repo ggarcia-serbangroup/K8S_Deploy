@@ -10,3 +10,4 @@ parameters:
   storageContainer: K8S_Storage
   # Fuerza el uso de rendimiento SSD en la cabina Nutanix
   flashMode: "true" 
+  storageType: NutanixVolumes
