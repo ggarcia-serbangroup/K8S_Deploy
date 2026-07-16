@@ -9,7 +9,7 @@ parameters:
   # Reemplaza 'K8S_Storage' por el nombre real en tu Prism Element
   storageContainer: K8S_Storage
   # Fuerza el uso de rendimiento SSD en la cabina Nutanix
-  flashMode: "true" 
+  flashMode: ENABLED 
   storageType: NutanixVolumes
   csi.storage.k8s.io/provisioner-secret-name: ntnx-secret
   csi.storage.k8s.io/provisioner-secret-namespace: ntnx-system
