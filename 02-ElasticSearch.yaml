@@ -9,7 +9,7 @@ spec:
   - name: default
     count: 1
     config:
-      node.roles: ["master", "data", "data_content", "data_hot", "ingest", "remote_cluster_client"]
+      #node.roles: ["master", "data", "data_content", "data_hot", "ingest", "remote_cluster_client"]
       node.store.allow_mmap: true
     podTemplate:
       spec:
@@ -35,3 +35,4 @@ spec:
         resources:
           requests:
             storage: 50Gi
+        storageClassName: elastic-nutanix-ssd
