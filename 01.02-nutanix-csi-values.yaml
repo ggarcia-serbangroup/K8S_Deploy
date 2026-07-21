@@ -1,0 +1,13 @@
+# Configuración global del Nutanix CSI Driver 3.x para Prism Element
+legacyConfig: false
+
+prisms:
+  - prismEndPoint: "172.27.1.20"
+    port: 9440
+    dataServicesIP: "172.27.1.19"
+    usePC: false
+    secretName: "ntnx-secret"
+    secretNamespace: "ntnx-system"
+
+# Habilitar el módulo de volúmenes de bloque (Nutanix Volumes / iSCSI)
+volumeProvider: true
