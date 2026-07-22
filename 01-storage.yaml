@@ -1,17 +1,19 @@
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: elastic-nutanix-ssd
+  name: nutanix-volume-G5
 provisioner: csi.nutanix.com
-volumeBindingMode: WaitForFirstConsumer
+reclaimPolicy: Delete
 allowVolumeExpansion: true
 parameters:
-  # Reemplaza 'K8S_Storage' por el nombre real en tu Prism Element
-  storageContainer: K8S_Storage
-  # Fuerza el uso de rendimiento SSD en la cabina Nutanix
-  flashMode: ENABLED 
+  csi.storage.k8s.io/fstype: ext4
+  storageContainer: "K8S_Storage"
   storageType: NutanixVolumes
+  flashMode: ENABLED
+  # Secret creado en el paso anterior
   csi.storage.k8s.io/provisioner-secret-name: ntnx-secret
   csi.storage.k8s.io/provisioner-secret-namespace: ntnx-system
   csi.storage.k8s.io/node-publish-secret-name: ntnx-secret
   csi.storage.k8s.io/node-publish-secret-namespace: ntnx-system
+  csi.storage.k8s.io/controller-expand-secret-name: ntnx-secret
+  csi.storage.k8s.io/controller-expand-secret-namespace: ntnx-system
