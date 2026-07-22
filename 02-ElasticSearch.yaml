@@ -35,7 +35,7 @@ spec:
       spec:
         accessModes:
         - ReadWriteOnce
-        storageClassName: nutanix-volume-G5
+        storageClassName: nutanix-cluster-g5-volume
         resources:
           requests:
             storage: 50Gi
