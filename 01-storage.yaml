@@ -1,7 +1,7 @@
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: nutanix-volume-g5
+  name: nutanix-cluster-g5-volume
 provisioner: csi.nutanix.com
 reclaimPolicy: Delete
 allowVolumeExpansion: true
