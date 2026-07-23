@@ -9,7 +9,7 @@ metadata:
   name: elasticsearch
   namespace: observability-ns
 spec:
-  version: 8.17.0
+  version: 9.4.3
   nodeSets:
   - name: default
     count: 1
@@ -46,7 +46,7 @@ metadata:
   name: kibana
   namespace: observability-ns
 spec:
-  version: 8.17.0
+  version: 9.4.3
   count: 1
   elasticsearchRef:
     name: elasticsearch
@@ -58,6 +58,3 @@ spec:
           limits:
             cpu: "1"
             memory: 2Gi
-          requests:
-            cpu: "500m"
-            memory: 1Gi
