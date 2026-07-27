@@ -10,7 +10,6 @@ parameters:
   storageContainer: "K8S_Storage"
   storageType: NutanixVolumes
   #flashMode: ENABLED
-  # Secret creado en el paso anterior
   csi.storage.k8s.io/provisioner-secret-name: ntnx-secret
   csi.storage.k8s.io/provisioner-secret-namespace: ntnx-system
   csi.storage.k8s.io/node-publish-secret-name: ntnx-secret
