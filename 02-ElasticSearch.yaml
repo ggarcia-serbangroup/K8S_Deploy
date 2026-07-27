@@ -9,7 +9,7 @@ metadata:
   name: elasticsearch
   namespace: observability-ns
 spec:
-  version: 9.4.3
+  version: 8.19.19
   nodeSets:
   - name: default
     count: 1
@@ -43,7 +43,7 @@ metadata:
   name: kibana
   namespace: observability-ns
 spec:
-  version: 9.4.3
+  version: 8.19.19
   count: 1
   elasticsearchRef:
     name: elasticsearch
