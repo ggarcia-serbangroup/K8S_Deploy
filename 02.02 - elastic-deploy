@@ -1,0 +1,210 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: observability-ns
+  labels:
+    entorno: prod
+    despliegue: observabilidad
+---
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: elasticsearch
+  namespace: observability-ns
+  labels:
+    entorno: prod
+    despliegue: observabilidad
+spec:
+  version: 9.4.4
+  nodeSets:
+  - name: default
+    count: 3
+    config:
+      node.store.allow_mmap: true
+    podTemplate:
+      metadata:
+        labels:
+          entorno: prod
+          despliegue: observabilidad
+      spec:
+        affinity:
+          podAntiAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: elasticsearch.k8s.elastic.co/cluster-name
+                  operator: In
+                  values:
+                  - elasticsearch
+              topologyKey: kubernetes.io/hostname
+        initContainers:
+        - name: sysctl
+          image: busybox:latest
+          command: ['sysctl', '-w', 'vm.max_map_count=262144']
+          securityContext:
+            privileged: true
+        containers:
+        - name: elasticsearch
+          env:
+          - name: ES_JAVA_OPTS
+            value: "-Xms2g -Xmx2g"
+          resources:
+            limits:
+              cpu: "2"
+              memory: 4Gi
+            requests:
+              cpu: "1"
+              memory: 4Gi
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        storageClassName: nutanix-cluster-g5-volume
+        resources:
+          requests:
+            storage: 50Gi
+---
+apiVersion: kibana.k8s.elastic.co/v1
+kind: Kibana
+metadata:
+  name: kibana
+  namespace: observability-ns
+  labels:
+    entorno: prod
+    despliegue: observabilidad
+spec:
+  version: 9.4.4
+  count: 1
+  elasticsearchRef:
+    name: elasticsearch
+  podTemplate:
+    metadata:
+      labels:
+        entorno: prod
+        despliegue: observabilidad
+    spec:
+      containers:
+      - name: kibana
+        resources:
+          limits:
+            cpu: "1"
+            memory: 2Gi
+          requests:
+            cpu: "500m"
+            memory: 1Gi
+---
+apiVersion: agent.k8s.elastic.co/v1alpha1
+kind: Agent
+metadata:
+  name: fleet-server
+  namespace: observability-ns
+  labels:
+    entorno: prod
+    despliegue: observabilidad
+spec:
+  version: 9.4.4
+  kibanaRef:
+    name: kibana
+  elasticsearchRef:
+    name: elasticsearch
+  mode: fleet
+  fleetServerMode: true
+  policyID: eck-fleet-server
+  count: 2
+  deployment:
+    replicas: 2
+    podTemplate:
+      metadata:
+        labels:
+          entorno: prod
+          despliegue: observabilidad
+      spec:
+        affinity:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: agent.k8s.elastic.co/name
+                    operator: In
+                    values:
+                    - fleet-server
+                topologyKey: kubernetes.io/hostname
+        containers:
+        - name: agent
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: "250m"
+              memory: 512Mi
+---
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: insecure-transport
+  namespace: observability-ns
+spec:
+  insecureSkipVerify: true
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kibana-ingress
+  namespace: observability-ns
+  labels:
+    entorno: prod
+    despliegue: observabilidad
+  annotations:
+    traefik.ingress.kubernetes.io/service.serversscheme: https
+    traefik.ingress.kubernetes.io/service.serverstransport: observability-ns-insecure-transport@kubernetescrd
+spec:
+  ingressClassName: traefik
+  tls:
+  - hosts:
+    - kibana-prod.illuminati.dark
+    secretName: kibana-prod-tls
+  rules:
+  - host: kibana-prod.illuminati.dark
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: kibana-kb-http
+            port:
+              number: 5601
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: fleet-server-ingress
+  namespace: observability-ns
+  labels:
+    entorno: prod
+    despliegue: observabilidad
+  annotations:
+    traefik.ingress.kubernetes.io/service.serversscheme: https
+    traefik.ingress.kubernetes.io/service.serverstransport: observability-ns-insecure-transport@kubernetescrd
+spec:
+  ingressClassName: traefik
+  tls:
+  - hosts:
+    - fleet-prod.illuminati.dark
+    secretName: fleet-prod-tls
+  rules:
+  - host: fleet-prod.illuminati.dark
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: fleet-server-agent-http
+            port:
+              number: 8220
