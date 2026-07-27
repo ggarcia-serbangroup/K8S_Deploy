@@ -1,0 +1,138 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: observability-ns
+  labels:
+    entorno: prod
+    despliegue: observabilidad
+---
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: elasticsearch
+  namespace: observability-ns
+  labels:
+    entorno: prod
+    despliegue: observabilidad
+spec:
+  version: 9.4.4
+  nodeSets:
+  - name: default
+    count: 3
+    config:
+      node.store.allow_mmap: true
+    podTemplate:
+      metadata:
+        labels:
+          entorno: prod
+          despliegue: observabilidad
+      spec:
+        # Anti-afinidad estricta para garantizar 1 Pod por cada nodo en el clúster de 3 nodos
+        affinity:
+          podAntiAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: elasticsearch.k8s.elastic.co/cluster-name
+                  operator: In
+                  values:
+                  - elasticsearch
+              topologyKey: kubernetes.io/hostname
+        initContainers:
+        # Ajuste necesario de vm.max_map_count para Elasticsearch en entornos Linux/k3s
+        - name: sysctl
+          image: busybox:latest
+          command: ['sysctl', '-w', 'vm.max_map_count=262144']
+          securityContext:
+            privileged: true
+        containers:
+        - name: elasticsearch
+          env:
+          - name: ES_JAVA_OPTS
+            value: "-Xms2g -Xmx2g"
+          resources:
+            limits:
+              cpu: "2"
+              memory: 4Gi
+            requests:
+              cpu: "1"
+              memory: 4Gi
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        storageClassName: nutanix-cluster-g5-volume
+        resources:
+          requests:
+            storage: 50Gi
+---
+apiVersion: kibana.k8s.elastic.co/v1
+kind: Kibana
+metadata:
+  name: kibana
+  namespace: observability-ns
+  labels:
+    entorno: prod
+    despliegue: observabilidad
+spec:
+  version: 9.4.4
+  count: 1
+  elasticsearchRef:
+    name: elasticsearch
+  podTemplate:
+    metadata:
+      labels:
+        entorno: prod
+        despliegue: observabilidad
+    spec:
+      containers:
+      - name: kibana
+        resources:
+          limits:
+            cpu: "1"
+            memory: 2Gi
+          requests:
+            cpu: "500m"
+            memory: 1Gi
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kibana-ingress
+  namespace: observability-ns
+  labels:
+    entorno: prod
+    despliegue: observabilidad
+  annotations:
+    # Fuerza a Traefik a comunicarse vía HTTPS con el Pod de Kibana
+    traefik.ingress.kubernetes.io/service.serversscheme: https
+    # Omite la validación de la CA si el certificado interno de Kibana es autofirmado por ECK
+    traefik.ingress.kubernetes.io/service.serverstransport: observability-ns-insecure-transport@kubernetescrd
+spec:
+  ingressClassName: traefik
+  tls:
+  - hosts:
+    - kibana-prod.illuminati.dark
+    secretName: kibana-prod-tls
+  rules:
+  - host: kibana-prod.illuminati.dark
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: kibana-kb-http
+            port:
+              number: 5601
+---
+# Configuración opcional para Traefik v2/v3 para ignorar certificados TLS autofirmados del backend Kibana
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: insecure-transport
+  namespace: observability-ns
+spec:
+  insecureSkipVerify: true
