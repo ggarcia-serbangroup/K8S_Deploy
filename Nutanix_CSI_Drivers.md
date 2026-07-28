@@ -19,4 +19,34 @@ sudo apt-get update
 sudo apt-get install -y open-iscsi lsscsi sg3-utils multipath-tools scsitools
 sudo systemctl enable --now iscsid
 ```
+### Instalación
+
+```shell
+# 1. Agregar el nuevo repositorio oficial de releases de Nutanix CSI
+helm repo add nutanix-releases https://nutanix.github.io/helm-releases/
+
+# 2. Actualizar la lista de repositorios
+helm repo update
+
+# 3. Listar las versiones disponibles de nutanix-csi-*
+helm search repo nutanix-releases/nutanix-csi- --versions
+
+# 4.1 Instalación de Nutanix snapshot
+helm install nutanix-csi-snapshot nutanix-releases/nutanix-csi-snapshot \ 
+	--namespace ntnx-system \ 
+	--create-namespace
+	
+# 4.2 Instalación de Nutanix Storage
+helm install nutanix-csi-storage nutanix-releases/nutanix-csi-storage \ 
+	--namespace ntnx-system \
+	--create-namespace \
+	--set secretName="ntnx-secret" \
+	--set createSecret=true \
+	--set username="usuario_Nutanix" \
+	--set password='password_Nutanix' \
+	--set prismEndPoint="IP_Nutanix_Prism_Element" \
+	--set ntnxInitConfigMap.usePC=false \
+	--set createPrismCentralSecret=false
+```
+
 
