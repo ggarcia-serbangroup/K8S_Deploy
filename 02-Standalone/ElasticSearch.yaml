@@ -12,6 +12,9 @@ metadata:
     app.kubernetes.io/instance: elasticsearch-dev
     app.kubernetes.io/component: search-engine
     app.kubernetes.io/part-of: elastic-stack
+    environment: developer
+    storage: nutanix
+    proyect: observability
 spec:
   serviceName: elasticsearch
   replicas: 1
@@ -19,6 +22,9 @@ spec:
     matchLabels:
       app.kubernetes.io/name: elasticsearch
       app.kubernetes.io/instance: elasticsearch-dev
+      environment: developer
+      storage: nutanix
+      proyect: observability
   template:
     metadata:
       labels:
@@ -26,6 +32,9 @@ spec:
         app.kubernetes.io/instance: elasticsearch-dev
         app.kubernetes.io/component: search-engine
         app.kubernetes.io/part-of: elastic-stack
+        environment: developer
+        storage: nutanix
+        proyect: observability
     spec:
       containers:
       - name: elasticsearch
@@ -56,6 +65,9 @@ spec:
       labels:
         app.kubernetes.io/name: elasticsearch
         app.kubernetes.io/component: storage
+        environment: developer
+        storage: nutanix
+        proyect: observability
     spec:
       accessModes: [ "ReadWriteOnce" ]
       storageClassName: "nutanix-cluster-g5-volume"
@@ -73,6 +85,8 @@ metadata:
     app.kubernetes.io/instance: elasticsearch-dev
     app.kubernetes.io/component: search-engine
     app.kubernetes.io/part-of: elastic-stack
+    environment: developer
+    proyect: observability
 spec:
   type: ClusterIP
   ports:
@@ -97,6 +111,8 @@ metadata:
     app.kubernetes.io/instance: kibana-dev
     app.kubernetes.io/component: visualization
     app.kubernetes.io/part-of: elastic-stack
+    environment: developer
+    proyect: observability
 spec:
   replicas: 1
   selector:
@@ -110,6 +126,8 @@ spec:
         app.kubernetes.io/instance: kibana-dev
         app.kubernetes.io/component: visualization
         app.kubernetes.io/part-of: elastic-stack
+        environment: developer
+        proyect: observability
     spec:
       containers:
       - name: kibana
@@ -142,6 +160,8 @@ metadata:
     app.kubernetes.io/instance: kibana-dev
     app.kubernetes.io/component: visualization
     app.kubernetes.io/part-of: elastic-stack
+    environment: developer
+    proyect: observability
 spec:
   type: ClusterIP
   ports:
@@ -166,6 +186,8 @@ metadata:
     app.kubernetes.io/instance: fleet-dev
     app.kubernetes.io/component: management
     app.kubernetes.io/part-of: elastic-stack
+    environment: developer
+    proyect: observability
 spec:
   replicas: 1
   selector:
@@ -179,6 +201,8 @@ spec:
         app.kubernetes.io/instance: fleet-dev
         app.kubernetes.io/component: management
         app.kubernetes.io/part-of: elastic-stack
+        environment: developer
+        proyect: observability
     spec:
       containers:
       - name: fleet-server
@@ -217,6 +241,8 @@ metadata:
     app.kubernetes.io/instance: fleet-dev
     app.kubernetes.io/component: management
     app.kubernetes.io/part-of: elastic-stack
+    environment: developer
+    proyect: observability
 spec:
   type: ClusterIP
   ports:
@@ -241,6 +267,8 @@ metadata:
   labels:
     app.kubernetes.io/name: elastic-ingress
     app.kubernetes.io/part-of: elastic-stack
+    environment: developer
+    proyect: observability
 spec:
   ingressClassName: traefik
   rules:
