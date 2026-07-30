@@ -275,8 +275,8 @@ spec:
             secretKeyRef:
               name: elastic-credentials
               key: ELASTIC_PASSWORD
-        - name: FLEET_SERVER_ELASTICSEARCH_INSECURE
-          value: "true"
+        - name: FLEET_SERVER_ELASTICSEARCH_CA
+          value: "/etc/tls/ca.crt"
         # Kibana
         - name: KIBANA_FLEET_HOST
           value: "https://kibana:5601"
@@ -289,11 +289,9 @@ spec:
               key: ELASTIC_PASSWORD
         - name: KIBANA_FLEET_SETUP
           value: "true"
-        - name: KIBANA_FLEET_INSECURE
-          value: "true"
-        # Servidor Fleet
-        - name: FLEET_SERVER_INSECURE_HTTP
-          value: "false"
+        - name: KIBANA_FLEET_CA
+          value: "/etc/tls/ca.crt"
+        # Fleet Server TLS
         - name: FLEET_SERVER_CERT
           value: "/etc/tls/tls.crt"
         - name: FLEET_SERVER_KEY
@@ -301,6 +299,21 @@ spec:
         ports:
         - containerPort: 8220
           name: fleet
+        resources:
+          limits:
+            cpu: "500m"
+            memory: 512Mi
+          requests:
+            cpu: "250m"
+            memory: 256Mi
+        volumeMounts:
+        - name: tls-certs
+          mountPath: /etc/tls
+          readOnly: true
+      volumes:
+      - name: tls-certs
+        secret:
+          secretName: wildcard-illuminati-tls
 ---
 apiVersion: v1
 kind: Service
