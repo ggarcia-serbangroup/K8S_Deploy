@@ -275,6 +275,15 @@ spec:
           value: "false"
         - name: KIBANA_FLEET_HOST
           value: "https://kibana:5601"
+        - name: KIBANA_FLEET_USERNAME
+          value: "elastic"
+        - name: KIBANA_FLEET_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: elastic-credentials
+              key: ELASTIC_PASSWORD
+        - name: KIBANA_FLEET_CA
+          value: "/etc/tls/ca.crt"
         ports:
         - containerPort: 8220
           name: fleet
