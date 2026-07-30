@@ -254,12 +254,17 @@ spec:
         environment: developer
         project: observability
     spec:
+      enableServiceLinks: false
       containers:
       - name: fleet-server
         image: docker.elastic.co/elastic-agent/elastic-agent:9.4.4
         env:
         - name: FLEET_SERVER_ENABLE
           value: "true"
+        - name: FLEET_SERVER_PORT
+          value: "8220"
+        - name: FLEET_SERVER_HOST
+          value: "0.0.0.0"
         - name: FLEET_SERVER_ELASTICSEARCH_HOST
           value: "https://elasticsearch:9200"
         - name: FLEET_SERVER_ELASTICSEARCH_USERNAME
