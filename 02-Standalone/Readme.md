@@ -1,7 +1,7 @@
 ## Requisitos
 ### Namespace
 ```shell
-kubectl create namespace il-obserbavility
+kubectl create namespace il-observability
 ```
 
 ### Credentials
@@ -12,9 +12,9 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: elastic-credentials
-  namespace: il-obserbavility
+  namespace: il-observability
 type: Opaque
 stringData:
-  ELASTIC_PASSWORD: "password"
+  ELASTIC_PASSWORD: "Password!"
 EOF
 ```
