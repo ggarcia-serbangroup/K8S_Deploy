@@ -88,7 +88,7 @@ spec:
   version: 9.4.4
   mode: fleet
   fleetServerEnabled: true
-  policyID: "" #fleet-server-policy
+  policyId: fleet-server-policy
   elasticsearchRefs:
   - name: elasticsearch
   kibanaRef:
