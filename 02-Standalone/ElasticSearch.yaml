@@ -226,36 +226,7 @@ spec:
 # -------------------------------------------------------------------
 # 3. FLEET-SERVER (Deployment + Service)
 # -------------------------------------------------------------------
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: fleet-server
-  namespace: il-observability
-  labels:
-    app.kubernetes.io/name: fleet-server
-    app.kubernetes.io/instance: fleet-dev
-    app.kubernetes.io/component: management
-    app.kubernetes.io/part-of: elastic-stack
-    environment: developer
-    project: observability
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: fleet-server
-      app.kubernetes.io/instance: fleet-dev
-  template:
-    metadata:
-      labels:
-        app.kubernetes.io/name: fleet-server
-        app.kubernetes.io/instance: fleet-dev
-        app.kubernetes.io/component: management
-        app.kubernetes.io/part-of: elastic-stack
-        environment: developer
-        project: observability
-    spec:
-      enableServiceLinks: false
-      containers:
+containers:
       - name: fleet-server
         image: docker.elastic.co/elastic-agent/elastic-agent:9.4.4
         env:
@@ -265,6 +236,7 @@ spec:
           value: "8220"
         - name: FLEET_SERVER_HOST
           value: "0.0.0.0"
+        # Elasticsearch
         - name: FLEET_SERVER_ELASTICSEARCH_HOST
           value: "https://elasticsearch:9200"
         - name: FLEET_SERVER_ELASTICSEARCH_USERNAME
@@ -274,12 +246,9 @@ spec:
             secretKeyRef:
               name: elastic-credentials
               key: ELASTIC_PASSWORD
-        - name: FLEET_SERVER_ELASTICSEARCH_CA
-          value: "/etc/tls/ca.crt"
-        - name: FLEET_SERVER_POLICY_ID
-          value: "fleet-server-policy"
-        - name: FLEET_SERVER_INSECURE_HTTP
-          value: "false"
+        - name: FLEET_SERVER_ELASTICSEARCH_INSECURE
+          value: "true"
+        # Kibana
         - name: KIBANA_FLEET_HOST
           value: "https://kibana:5601"
         - name: KIBANA_FLEET_USERNAME
@@ -289,26 +258,20 @@ spec:
             secretKeyRef:
               name: elastic-credentials
               key: ELASTIC_PASSWORD
-        - name: KIBANA_FLEET_CA
-          value: "/etc/tls/ca.crt"
+        - name: KIBANA_FLEET_SETUP
+          value: "true"
+        - name: KIBANA_FLEET_INSECURE
+          value: "true"
+        # Servidor Fleet
+        - name: FLEET_SERVER_INSECURE_HTTP
+          value: "false"
+        - name: FLEET_SERVER_CERT
+          value: "/etc/tls/tls.crt"
+        - name: FLEET_SERVER_KEY
+          value: "/etc/tls/tls.key"
         ports:
         - containerPort: 8220
           name: fleet
-        resources:
-          limits:
-            cpu: "500m"
-            memory: 512Mi
-          requests:
-            cpu: "250m"
-            memory: 256Mi
-        volumeMounts:
-        - name: tls-certs
-          mountPath: /etc/tls
-          readOnly: true
-      volumes:
-      - name: tls-certs
-        secret:
-          secretName: wildcard-illuminati-tls
 ---
 apiVersion: v1
 kind: Service
