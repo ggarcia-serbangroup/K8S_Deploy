@@ -14,7 +14,7 @@ metadata:
     app.kubernetes.io/part-of: elastic-stack
     environment: developer
     storage: nutanix
-    proyect: observability
+    project: observability
 spec:
   serviceName: elasticsearch
   replicas: 1
@@ -24,7 +24,7 @@ spec:
       app.kubernetes.io/instance: elasticsearch-dev
       environment: developer
       storage: nutanix
-      proyect: observability
+      project: observability
   template:
     metadata:
       labels:
@@ -34,7 +34,7 @@ spec:
         app.kubernetes.io/part-of: elastic-stack
         environment: developer
         storage: nutanix
-        proyect: observability
+        project: observability
     spec:
       containers:
       - name: elasticsearch
@@ -73,6 +73,10 @@ spec:
         - name: tls-certs
           mountPath: /usr/share/elasticsearch/config/certs
           readOnly: true
+      volumes:
+      - name: tls-certs
+        secret:
+          secretName: wildcard-illuminati-tls
   volumeClaimTemplates:
   - metadata:
       name: elasticsearch-data
@@ -81,7 +85,7 @@ spec:
         app.kubernetes.io/component: storage
         environment: developer
         storage: nutanix
-        proyect: observability
+        project: observability
     spec:
       accessModes: [ "ReadWriteOnce" ]
       storageClassName: "nutanix-cluster-g5-volume"
@@ -100,7 +104,7 @@ metadata:
     app.kubernetes.io/component: search-engine
     app.kubernetes.io/part-of: elastic-stack
     environment: developer
-    proyect: observability
+    project: observability
 spec:
   type: ClusterIP
   ports:
@@ -126,7 +130,7 @@ metadata:
     app.kubernetes.io/component: visualization
     app.kubernetes.io/part-of: elastic-stack
     environment: developer
-    proyect: observability
+    project: observability
 spec:
   replicas: 1
   selector:
@@ -141,7 +145,7 @@ spec:
         app.kubernetes.io/component: visualization
         app.kubernetes.io/part-of: elastic-stack
         environment: developer
-        proyect: observability
+        project: observability
     spec:
       containers:
       - name: kibana
@@ -196,13 +200,13 @@ metadata:
     app.kubernetes.io/component: visualization
     app.kubernetes.io/part-of: elastic-stack
     environment: developer
-    proyect: observability
+    project: observability
 spec:
   type: ClusterIP
   ports:
   - port: 5601
     targetPort: 5601
-    name: http
+    name: https
   selector:
     app.kubernetes.io/name: kibana
     app.kubernetes.io/instance: kibana-dev
@@ -222,7 +226,7 @@ metadata:
     app.kubernetes.io/component: management
     app.kubernetes.io/part-of: elastic-stack
     environment: developer
-    proyect: observability
+    project: observability
 spec:
   replicas: 1
   selector:
@@ -237,7 +241,7 @@ spec:
         app.kubernetes.io/component: management
         app.kubernetes.io/part-of: elastic-stack
         environment: developer
-        proyect: observability
+        project: observability
     spec:
       containers:
       - name: fleet-server
@@ -259,9 +263,9 @@ spec:
         - name: FLEET_SERVER_POLICY_ID
           value: "fleet-server-policy"
         - name: FLEET_SERVER_INSECURE_HTTP
-          value: "true"
+          value: "false"
         - name: KIBANA_FLEET_HOST
-          value: "http://kibana:5601"
+          value: "https://kibana:5601"
         ports:
         - containerPort: 8220
           name: fleet
@@ -292,7 +296,7 @@ metadata:
     app.kubernetes.io/component: management
     app.kubernetes.io/part-of: elastic-stack
     environment: developer
-    proyect: observability
+    project: observability
 spec:
   type: ClusterIP
   ports:
@@ -305,7 +309,7 @@ spec:
 
 ---
 # -------------------------------------------------------------------
-# 4. INGRESSES (Exposición externa Traefik)
+# 4. INGRESSES (Exposición externa Traefik End-to-End SSL)
 # -------------------------------------------------------------------
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -319,7 +323,7 @@ metadata:
     app.kubernetes.io/name: elastic-ingress
     app.kubernetes.io/part-of: elastic-stack
     environment: developer
-    proyect: observability
+    project: observability
 spec:
   ingressClassName: traefik
   tls:
