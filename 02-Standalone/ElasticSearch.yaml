@@ -1,7 +1,5 @@
 ---
-# -------------------------------------------------------------------
-# 1. ELASTICSEARCH (ECK Resource)
-# -------------------------------------------------------------------
+# 1. ELASTICSEARCH
 apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:
@@ -43,9 +41,7 @@ spec:
             storage: 300Gi
 
 ---
-# -------------------------------------------------------------------
-# 2. KIBANA (ECK Resource)
-# -------------------------------------------------------------------
+# 2. KIBANA
 apiVersion: kibana.k8s.elastic.co/v1
 kind: Kibana
 metadata:
@@ -79,9 +75,7 @@ spec:
             memory: 512Mi
 
 ---
-# -------------------------------------------------------------------
-# 3. FLEET SERVER (Agent ECK Resource)
-# -------------------------------------------------------------------
+# 3. FLEET SERVER (AGENT)
 apiVersion: agent.k8s.elastic.co/v1alpha1
 kind: Agent
 metadata:
@@ -94,8 +88,8 @@ spec:
   version: 9.4.4
   mode: fleet
   fleetServerEnabled: true
-  elasticsearchRef:
-    name: elasticsearch
+  elasticsearchRefs:
+  - name: elasticsearch
   kibanaRef:
     name: kibana
   http:
@@ -117,9 +111,7 @@ spec:
               memory: 256Mi
 
 ---
-# -------------------------------------------------------------------
-# 4. INGRESS (Traefik SSL End-to-End)
-# -------------------------------------------------------------------
+# 4. INGRESS (Kubernetes standard API)
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
