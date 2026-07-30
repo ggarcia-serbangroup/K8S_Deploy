@@ -1,6 +1,6 @@
 ---
 # -------------------------------------------------------------------
-# 1. ELASTICSEARCH (StatefulSet + Service) - v9.4.4
+# 1. ELASTICSEARCH (StatefulSet + Service)
 # -------------------------------------------------------------------
 apiVersion: apps/v1
 kind: StatefulSet
@@ -45,10 +45,21 @@ spec:
         - name: ES_JAVA_OPTS
           value: "-Xms1g -Xmx1g"
         - name: xpack.security.enabled
-          value: "false"
+          value: "true"
+        - name: xpack.security.http.ssl.enabled
+          value: "true"
+        - name: xpack.security.http.ssl.key
+          value: "/usr/share/elasticsearch/config/certs/tls.key"
+        - name: xpack.security.http.ssl.certificate
+          value: "/usr/share/elasticsearch/config/certs/tls.crt"
+        - name: ELASTIC_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: elastic-credentials
+              key: ELASTIC_PASSWORD
         ports:
         - containerPort: 9200
-          name: http
+          name: https
         resources:
           limits:
             cpu: "2"
@@ -59,6 +70,9 @@ spec:
         volumeMounts:
         - name: elasticsearch-data
           mountPath: /usr/share/elasticsearch/data
+        - name: tls-certs
+          mountPath: /usr/share/elasticsearch/config/certs
+          readOnly: true
   volumeClaimTemplates:
   - metadata:
       name: elasticsearch-data
@@ -73,7 +87,7 @@ spec:
       storageClassName: "nutanix-cluster-g5-volume"
       resources:
         requests:
-          storage: 30Gi
+          storage: 300Gi
 ---
 apiVersion: v1
 kind: Service
@@ -92,14 +106,14 @@ spec:
   ports:
   - port: 9200
     targetPort: 9200
-    name: http
+    name: https
   selector:
     app.kubernetes.io/name: elasticsearch
     app.kubernetes.io/instance: elasticsearch-dev
 
 ---
 # -------------------------------------------------------------------
-# 2. KIBANA (Deployment + Service) - v9.4.4
+# 2. KIBANA (Deployment + Service)
 # -------------------------------------------------------------------
 apiVersion: apps/v1
 kind: Deployment
@@ -134,14 +148,27 @@ spec:
         image: docker.elastic.co/kibana/kibana:9.4.4
         env:
         - name: ELASTICSEARCH_HOSTS
-          value: "http://elasticsearch:9200"
+          value: "https://elasticsearch:9200"
+        - name: ELASTICSEARCH_USERNAME
+          value: "elastic"
+        - name: ELASTICSEARCH_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: elastic-credentials
+              key: ELASTIC_PASSWORD
+        - name: ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES
+          value: "/usr/share/kibana/config/certs/ca.crt"
         - name: SERVER_NAME
           value: "kibana-dev.illuminati.dark"
-        - name: KIBANA_FLEET_SETUP
+        - name: SERVER_SSL_ENABLED
           value: "true"
+        - name: SERVER_SSL_CERTIFICATE
+          value: "/usr/share/kibana/config/certs/tls.crt"
+        - name: SERVER_SSL_KEY
+          value: "/usr/share/kibana/config/certs/tls.key"
         ports:
         - containerPort: 5601
-          name: http
+          name: https
         resources:
           limits:
             cpu: "1"
@@ -149,6 +176,14 @@ spec:
           requests:
             cpu: "250m"
             memory: 512Mi
+        volumeMounts:
+        - name: tls-certs
+          mountPath: /usr/share/kibana/config/certs
+          readOnly: true
+      volumes:
+      - name: tls-certs
+        secret:
+          secretName: wildcard-illuminati-tls
 ---
 apiVersion: v1
 kind: Service
@@ -174,7 +209,7 @@ spec:
 
 ---
 # -------------------------------------------------------------------
-# 3. FLEET-SERVER (Deployment + Service) - v9.4.4
+# 3. FLEET-SERVER (Deployment + Service)
 # -------------------------------------------------------------------
 apiVersion: apps/v1
 kind: Deployment
@@ -211,13 +246,20 @@ spec:
         - name: FLEET_SERVER_ENABLE
           value: "true"
         - name: FLEET_SERVER_ELASTICSEARCH_HOST
-          value: "http://elasticsearch:9200"
-        - name: FLEET_SERVER_SERVICE_TOKEN
-          value: "AAEAAWVsYXN0aWMvZmxlZXQtc2VydmVyL3Rva2VuLTE3MjIyMjIyMjIyMjI"
-        - name: FLEET_SERVER_INSECURE_HTTP
-          value: "true"
+          value: "https://elasticsearch:9200"
+        - name: FLEET_SERVER_ELASTICSEARCH_USERNAME
+          value: "elastic"
+        - name: FLEET_SERVER_ELASTICSEARCH_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: elastic-credentials
+              key: ELASTIC_PASSWORD
+        - name: FLEET_SERVER_ELASTICSEARCH_CA
+          value: "/etc/tls/ca.crt"
         - name: FLEET_SERVER_POLICY_ID
           value: "fleet-server-policy"
+        - name: FLEET_SERVER_INSECURE_HTTP
+          value: "true"
         - name: KIBANA_FLEET_HOST
           value: "http://kibana:5601"
         ports:
@@ -230,6 +272,14 @@ spec:
           requests:
             cpu: "250m"
             memory: 256Mi
+        volumeMounts:
+        - name: tls-certs
+          mountPath: /etc/tls
+          readOnly: true
+      volumes:
+      - name: tls-certs
+        secret:
+          secretName: wildcard-illuminati-tls
 ---
 apiVersion: v1
 kind: Service
@@ -264,6 +314,7 @@ metadata:
   namespace: default
   annotations:
     ingress.kubernetes.io/ssl-redirect: "true"
+    traefik.ingress.kubernetes.io/service.serversscheme: "https"
   labels:
     app.kubernetes.io/name: elastic-ingress
     app.kubernetes.io/part-of: elastic-stack
@@ -271,6 +322,12 @@ metadata:
     proyect: observability
 spec:
   ingressClassName: traefik
+  tls:
+  - hosts:
+    - elastic-dev.illuminati.dark
+    - kibana-dev.illuminati.dark
+    - fleet-dev.illuminati.dark
+    secretName: wildcard-illuminati-tls
   rules:
   - host: elastic-dev.illuminati.dark
     http:
