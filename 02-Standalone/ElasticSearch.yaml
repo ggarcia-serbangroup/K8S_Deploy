@@ -168,7 +168,7 @@ spec:
           valueFrom:
             secretKeyRef:
               name: elastic-credentials
-              key: ELASTIC_PASSWORD
+              key: KIBANA_SYSTEM_PASSWORD
         - name: ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES
           value: "/usr/share/kibana/config/certs/ca.crt"
         - name: SERVER_NAME
