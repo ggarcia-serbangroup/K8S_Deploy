@@ -1,8 +1,8 @@
 ---
 # -------------------------------------------------------------------
-# 1. ELASTICSEARCH (ECK Resource 9.4.4)
+# 1. ELASTICSEARCH (ECK Resource)
 # -------------------------------------------------------------------
-apiVersion: elasticsearch.k8s.io/v1
+apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:
   name: elasticsearch
@@ -44,9 +44,9 @@ spec:
 
 ---
 # -------------------------------------------------------------------
-# 2. KIBANA (ECK Resource 9.4.4)
+# 2. KIBANA (ECK Resource)
 # -------------------------------------------------------------------
-apiVersion: kibana.k8s.io/v1
+apiVersion: kibana.k8s.elastic.co/v1
 kind: Kibana
 metadata:
   name: kibana
@@ -80,9 +80,9 @@ spec:
 
 ---
 # -------------------------------------------------------------------
-# 3. FLEET SERVER (Agent ECK Resource 9.4.4)
+# 3. FLEET SERVER (Agent ECK Resource)
 # -------------------------------------------------------------------
-apiVersion: agent.k8s.io/v1alpha1
+apiVersion: agent.k8s.elastic.co/v1alpha1
 kind: Agent
 metadata:
   name: fleet-server
