@@ -307,6 +307,7 @@ metadata:
   annotations:
     ingress.kubernetes.io/ssl-redirect: "true"
     traefik.ingress.kubernetes.io/service.serversscheme: "https"
+    traefik.ingress.kubernetes.io/service.serverstransport: "il-observability-insecure-transport@kubernetescrd"
   labels:
     app.kubernetes.io/name: elastic-ingress
     app.kubernetes.io/part-of: elastic-stack
@@ -330,7 +331,7 @@ spec:
           service:
             name: elasticsearch
             port:
-              number: 9200
+              name: https
   - host: kibana-dev.illuminati.dark
     http:
       paths:
@@ -340,7 +341,7 @@ spec:
           service:
             name: kibana
             port:
-              number: 5601
+              name: https
   - host: fleet-dev.illuminati.dark
     http:
       paths:
@@ -350,4 +351,15 @@ spec:
           service:
             name: fleet-server
             port:
-              number: 8220
+              name: fleet
+---
+# -------------------------------------------------------------------
+# ServersTransport para omitir validación TLS interna en Traefik si los pods usan certs locales
+# -------------------------------------------------------------------
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: insecure-transport
+  namespace: il-observability
+spec:
+  insecureSkipVerify: true
