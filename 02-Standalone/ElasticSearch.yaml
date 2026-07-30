@@ -226,6 +226,36 @@ spec:
 # -------------------------------------------------------------------
 # 3. FLEET-SERVER (Deployment + Service)
 # -------------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fleet-server
+  namespace: il-observability
+  labels:
+    app.kubernetes.io/name: fleet-server
+    app.kubernetes.io/instance: fleet-dev
+    app.kubernetes.io/component: management
+    app.kubernetes.io/part-of: elastic-stack
+    environment: developer
+    project: observability
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: fleet-server
+      app.kubernetes.io/instance: fleet-dev
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: fleet-server
+        app.kubernetes.io/instance: fleet-dev
+        app.kubernetes.io/component: management
+        app.kubernetes.io/part-of: elastic-stack
+        environment: developer
+        project: observability
+    spec:
+      enableServiceLinks: false
+      containers:
 containers:
       - name: fleet-server
         image: docker.elastic.co/elastic-agent/elastic-agent:9.4.4
