@@ -88,7 +88,7 @@ spec:
   version: 9.4.4
   mode: fleet
   fleetServerEnabled: true
-  policyID: Elastic-Agent-only-configuration
+  #policyID: Elastic-Agent-only-configuration
   elasticsearchRefs:
   - name: elasticsearch
   kibanaRef:
