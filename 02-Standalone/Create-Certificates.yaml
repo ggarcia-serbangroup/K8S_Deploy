@@ -2,6 +2,7 @@ apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
   name: selfsigned-issuer
+  namespace: cert-manager
 spec:
   selfSigned: {}
 ---
@@ -26,6 +27,7 @@ apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
   name: illuminati-ca-issuer
+  namespace: cert-manager
 spec:
   ca:
     secretName: illuminati-root-ca-secret
@@ -34,11 +36,11 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: wildcard-illuminati-tls
-  namespace: default
+  namespace: il-observability
 spec:
   secretName: wildcard-illuminati-tls
-  duration: 8760h # 1 año
-  renewBefore: 720h # 30 días antes
+  duration: 8760h
+  renewBefore: 720h
   subject:
     organizations:
       - Illuminati IT
@@ -47,7 +49,7 @@ spec:
     - "*.illuminati.dark"
     - "illuminati.dark"
     - "elasticsearch"
-    - "elasticsearch.default.svc.cluster.local"
+    - "elasticsearch.il-observability.svc.cluster.local"
   issuerRef:
     name: illuminati-ca-issuer
     kind: ClusterIssuer
