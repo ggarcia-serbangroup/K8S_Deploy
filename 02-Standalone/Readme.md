@@ -1,6 +1,8 @@
 ## Requisitos
 ### Namespace
+```shell
 kubectl create namespace il-obserbavility
+```
 
 ### Credentials
 Necesitaremos crear las credenciales para elastic
