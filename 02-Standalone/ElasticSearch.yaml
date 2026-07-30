@@ -81,10 +81,14 @@ kind: Agent
 metadata:
   name: fleet-server
   namespace: il-observability
+  labels:
+    environment: developer
+    project: observability
 spec:
   version: 9.4.4
   mode: fleet
   fleetServerEnabled: true
+  policyID: fleet-server-policy
   elasticsearchRefs:
   - name: elasticsearch
   kibanaRef:
