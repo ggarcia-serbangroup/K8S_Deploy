@@ -29,3 +29,25 @@ metadata:
 spec:
   ca:
     secretName: illuminati-root-ca-secret
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: wildcard-illuminati-tls
+  namespace: default
+spec:
+  secretName: wildcard-illuminati-tls
+  duration: 8760h # 1 año
+  renewBefore: 720h # 30 días antes
+  subject:
+    organizations:
+      - Illuminati IT
+  commonName: "*.illuminati.dark"
+  dnsNames:
+    - "*.illuminati.dark"
+    - "illuminati.dark"
+    - "elasticsearch"
+    - "elasticsearch.default.svc.cluster.local"
+  issuerRef:
+    name: illuminati-ca-issuer
+    kind: ClusterIssuer
