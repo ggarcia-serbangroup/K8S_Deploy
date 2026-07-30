@@ -297,7 +297,7 @@ spec:
 
 ---
 # -------------------------------------------------------------------
-# 4. INGRESSES (Exposición externa Traefik End-to-End SSL)
+# 4. INGRESS (Exposición externa Traefik End-to-End SSL)
 # -------------------------------------------------------------------
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -355,7 +355,7 @@ spec:
 
 ---
 # -------------------------------------------------------------------
-# ServersTransport para omitir validación TLS interna en Traefik si los pods usan certs locales
+# 5. SERVERSTRANSPORT (Omitir validación TLS interna en Traefik)
 # -------------------------------------------------------------------
 apiVersion: traefik.io/v1alpha1
 kind: ServersTransport
