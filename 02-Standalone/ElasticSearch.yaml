@@ -85,7 +85,9 @@ metadata:
     environment: developer
     project: observability
 spec:
-  policyId: 1f8acad2-d5d1-4961-8c10-3fe2c92b114f
+  config:
+    inputs:
+      - policyID: "fleet-server-policy" # O el ID exacto de tu política en Kibana
   version: 9.4.4
   mode: fleet
   fleetServerEnabled: true
