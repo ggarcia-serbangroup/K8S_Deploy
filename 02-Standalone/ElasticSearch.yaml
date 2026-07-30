@@ -1,81 +1,37 @@
----
-# 1. ELASTICSEARCH
-apiVersion: elasticsearch.k8s.elastic.co/v1
-kind: Elasticsearch
-metadata:
-  name: elasticsearch
-  namespace: il-observability
-  labels:
-    environment: developer
-    project: observability
-spec:
-  version: 9.4.4
-  http:
-    tls:
-      certificate:
-        secretName: wildcard-illuminati-tls
-  nodeSets:
-  - name: default
-    count: 1
-    config:
-      node.store.allow_mmap: false
-    podTemplate:
-      spec:
-        containers:
-        - name: elasticsearch
-          resources:
-            limits:
-              cpu: "2"
-              memory: 2Gi
-            requests:
-              cpu: "500m"
-              memory: 1Gi
-    volumeClaimTemplates:
-    - metadata:
-        name: elasticsearch-data
-      spec:
-        accessModes: [ "ReadWriteOnce" ]
-        storageClassName: "nutanix-cluster-g5-volume"
-        resources:
-          requests:
-            storage: 300Gi
-
----
-# 2. KIBANA
 apiVersion: kibana.k8s.elastic.co/v1
 kind: Kibana
 metadata:
   name: kibana
   namespace: il-observability
-  labels:
-    environment: developer
-    project: observability
 spec:
   version: 9.4.4
-  count: 1
   elasticsearchRef:
     name: elasticsearch
-  http:
-    tls:
-      certificate:
-        secretName: wildcard-illuminati-tls
   config:
-    xpack.encryptedSavedObjects.encryptionKey: "illuminati_observability_secret_key_32chars_min"
-    server.publicBaseUrl: "https://kibana-dev.illuminati.dark"
-  podTemplate:
-    spec:
-      containers:
-      - name: kibana
-        resources:
-          limits:
-            cpu: "1"
-            memory: 1Gi
-          requests:
-            cpu: "250m"
-            memory: 512Mi
-
+    xpack.fleet.agents.elasticsearch.hosts: ["https://elasticsearch-es-http.il-observability.svc:9200"]
+    xpack.fleet.agents.fleet_server.hosts: ["https://fleet-server-agent-http.il-observability.svc:8220"]
+    xpack.fleet.packages:
+      - name: system
+        version: latest
+      - name: elastic_agent
+        version: latest
+      - name: fleet_server
+        version: latest
+    xpack.fleet.agentPolicies:
+      - name: Fleet Server Policy
+        id: eck-fleet-server
+        is_default_fleet_server: true
+        namespace: default
+        monitoring_enabled:
+          - logs
+          - metrics
+        unenroll_timeout: 900
+        package_policies:
+          - name: fleet_server-1
+            id: fleet_server-1
+            package:
+              name: fleet_server
 ---
-# 3. FLEET SERVER (AGENT)
 apiVersion: agent.k8s.elastic.co/v1alpha1
 kind: Agent
 metadata:
@@ -88,9 +44,9 @@ spec:
   version: 9.4.4
   mode: fleet
   fleetServerEnabled: true
-  #policyID: Elastic-Agent-only-configuration
+  policyID: eck-fleet-server
   elasticsearchRefs:
-  - name: elasticsearch
+    - name: elasticsearch
   kibanaRef:
     name: kibana
   http:
@@ -102,65 +58,11 @@ spec:
     podTemplate:
       spec:
         containers:
-        - name: agent
-          resources:
-            limits:
-              cpu: "500m"
-              memory: 512Mi
-            requests:
-              cpu: "250m"
-              memory: 256Mi
----
-# 4. INGRESS (Kubernetes standard API)
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: elastic-stack-ingress
-  namespace: il-observability
-  annotations:
-    ingress.kubernetes.io/ssl-redirect: "true"
-    traefik.ingress.kubernetes.io/service.serversscheme: "https"
-    traefik.ingress.kubernetes.io/service.insecureskipverify: "true"
-  labels:
-    app.kubernetes.io/name: elastic-ingress
-    environment: developer
-    project: observability
-spec:
-  ingressClassName: traefik
-  tls:
-  - hosts:
-    - elastic-dev.illuminati.dark
-    - kibana-dev.illuminati.dark
-    - fleet-dev.illuminati.dark
-    secretName: wildcard-illuminati-tls
-  rules:
-  - host: elastic-dev.illuminati.dark
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: elasticsearch-es-http
-            port:
-              number: 9200
-  - host: kibana-dev.illuminati.dark
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: kibana-kb-http
-            port:
-              number: 5601
-  - host: fleet-dev.illuminati.dark
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: fleet-server-agent-http
-            port:
-              number: 8220
+          - name: agent
+            resources:
+              limits:
+                cpu: "500m"
+                memory: 512Mi
+              requests:
+                cpu: "250m"
+                memory: 256Mi
