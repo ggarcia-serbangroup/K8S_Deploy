@@ -352,5 +352,15 @@ spec:
             name: fleet-server
             port:
               name: fleet
-
+---
+# -------------------------------------------------------------------
+# 5. SERVERSTRANSPORT (Omitir validación TLS interna en Traefik)
+# -------------------------------------------------------------------
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: insecure-transport
+  namespace: il-observability
+spec:
+  insecureSkipVerify: true
 
