@@ -256,7 +256,6 @@ spec:
     spec:
       enableServiceLinks: false
       containers:
-containers:
       - name: fleet-server
         image: docker.elastic.co/elastic-agent/elastic-agent:9.4.4
         env:
