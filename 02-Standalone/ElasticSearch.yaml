@@ -352,6 +352,7 @@ spec:
             name: fleet-server
             port:
               name: fleet
+
 ---
 # -------------------------------------------------------------------
 # ServersTransport para omitir validación TLS interna en Traefik si los pods usan certs locales
@@ -363,4 +364,3 @@ metadata:
   namespace: il-observability
 spec:
   insecureSkipVerify: true
----
