@@ -89,3 +89,68 @@ spec:
               requests:
                 cpu: "250m"
                 memory: 256Mi
+---
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: eck-insecure-transport
+  namespace: il-observability
+spec:
+  insecureSkipVerify: true
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: kibana-ingress
+  namespace: il-observability
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`kibana-dev.illuminati.dark`)
+      kind: Rule
+      services:
+        - name: kibana-kb-http
+          port: 5601
+          scheme: https
+          serversTransport: eck-insecure-transport
+  tls:
+    secretName: wildcard-illuminati-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: elasticsearch-ingress
+  namespace: il-observability
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`elastic-dev.illuminati.dark`)
+      kind: Rule
+      services:
+        - name: elasticsearch-es-http
+          port: 9200
+          scheme: https
+          serversTransport: eck-insecure-transport
+  tls:
+    secretName: wildcard-illuminati-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: fleet-server-ingress
+  namespace: il-observability
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`fleet-dev.illuminati.dark`)
+      kind: Rule
+      services:
+        - name: fleet-server-agent-http
+          port: 8220
+          scheme: https
+          serversTransport: eck-insecure-transport
+  tls:
+    secretName: wildcard-illuminati-tls
