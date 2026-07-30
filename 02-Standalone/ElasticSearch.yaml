@@ -265,7 +265,7 @@ spec:
           value: "8220"
         - name: FLEET_SERVER_HOST
           value: "0.0.0.0"
-        # Elasticsearch
+        # Elasticsearch connection
         - name: FLEET_SERVER_ELASTICSEARCH_HOST
           value: "https://elasticsearch:9200"
         - name: FLEET_SERVER_ELASTICSEARCH_USERNAME
@@ -277,7 +277,7 @@ spec:
               key: ELASTIC_PASSWORD
         - name: FLEET_SERVER_ELASTICSEARCH_CA
           value: "/etc/tls/ca.crt"
-        # Kibana
+        # Kibana connection
         - name: KIBANA_FLEET_HOST
           value: "https://kibana:5601"
         - name: KIBANA_FLEET_USERNAME
@@ -291,10 +291,16 @@ spec:
           value: "true"
         - name: KIBANA_FLEET_CA
           value: "/etc/tls/ca.crt"
-        # Fleet Server TLS
+        # Fleet Server TLS Server binding (Rutas explícitas)
+        - name: FLEET_SERVER_INSECURE_HTTP
+          value: "false"
         - name: FLEET_SERVER_CERT
           value: "/etc/tls/tls.crt"
         - name: FLEET_SERVER_KEY
+          value: "/etc/tls/tls.key"
+        - name: FLEET_SERVER_SERVER_CERT
+          value: "/etc/tls/tls.crt"
+        - name: FLEET_SERVER_SERVER_KEY
           value: "/etc/tls/tls.key"
         ports:
         - containerPort: 8220
