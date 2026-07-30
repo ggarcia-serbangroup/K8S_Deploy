@@ -1,4 +1,8 @@
 ## Requisitos
+### Namespace
+kubectl create namespace il-obserbavility
+
+### Credentials
 Necesitaremos crear las credenciales para elastic
 ```shell
 cat <<EOF | kubectl apply -f -
@@ -6,7 +10,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: elastic-credentials
-  namespace: default
+  namespace: il-obserbavility
 type: Opaque
 stringData:
   ELASTIC_PASSWORD: "password"
