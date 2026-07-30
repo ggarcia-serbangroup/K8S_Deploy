@@ -50,6 +50,9 @@ spec:
     - "illuminati.dark"
     - "elasticsearch"
     - "elasticsearch.il-observability.svc.cluster.local"
+    - "kibana"
+    - "kibana.il-observability.svc.cluster.local"
+    - "kibana-dev.illuminati.dark"
   issuerRef:
     name: illuminati-ca-issuer
     kind: ClusterIssuer
