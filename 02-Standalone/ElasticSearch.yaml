@@ -298,10 +298,10 @@ spec:
           value: "/etc/tls/tls.crt"
         - name: FLEET_SERVER_KEY
           value: "/etc/tls/tls.key"
-        - name: FLEET_SERVER_SERVER_CERT
+        - name: FLEET_SERVER_CERTIFICATE
           value: "/etc/tls/tls.crt"
-        - name: FLEET_SERVER_SERVER_KEY
-          value: "/etc/tls/tls.key"
+        - name: FLEET_SERVER_SERVICE_TOKEN
+          value: ""
         ports:
         - containerPort: 8220
           name: fleet
