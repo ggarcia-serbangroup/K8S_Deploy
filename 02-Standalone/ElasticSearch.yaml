@@ -1,5 +1,16 @@
 ---
 # -------------------------------------------------------------------
+# 0. Namespace
+# -------------------------------------------------------------------
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: il-observability
+  labels:
+    environment: developer
+    project: observability
+---
+# -------------------------------------------------------------------
 # 1. ELASTICSEARCH (StatefulSet + Service)
 # -------------------------------------------------------------------
 apiVersion: apps/v1
