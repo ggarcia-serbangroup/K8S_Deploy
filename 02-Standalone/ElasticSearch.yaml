@@ -91,9 +91,6 @@ spec:
       spec:
         containers:
           - name: agent
-            env:
-              - name: CERTIFICATE_AUTHORITIES
-                value: /etc/agent/certs/ca.crt
             resources:
               limits:
                 cpu: "500m"
@@ -101,6 +98,15 @@ spec:
               requests:
                 cpu: "250m"
                 memory: 256Mi
+            volumeMounts:
+              - name: es-ca
+                mountPath: /etc/ssl/certs/elasticsearch-ca.crt
+                subPath: ca.crt
+                readOnly: true
+        volumes:
+          - name: es-ca
+            secret:
+              secretName: elasticsearch-es-ca-internal
 ---
 # -------------------------------------------------------------------
 # 4. TRAEFIK INGRESSROUTE
