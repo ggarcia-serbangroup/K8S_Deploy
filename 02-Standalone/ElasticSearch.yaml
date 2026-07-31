@@ -77,15 +77,8 @@ spec:
   policyID: eck-fleet-server
   elasticsearchRefs:
     - name: elasticsearch
-      secret:
-        name: elasticsearch-es-http-ca-internal
-        key: ca.crt
   kibanaRef:
     name: kibana
-  http:
-    tls:
-      certificate:
-        secretName: wildcard-illuminati-tls
   deployment:
     replicas: 1
     podTemplate:
