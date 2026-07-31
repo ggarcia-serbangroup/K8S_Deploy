@@ -51,9 +51,7 @@ spec:
         id: eck-fleet-server
         is_default_fleet_server: true
         namespace: default
-        monitoring_enabled:
-          - logs
-          - metrics
+        monitoring_enabled: []
         unenroll_timeout: 900
         package_policies:
           - name: fleet_server-1
@@ -91,9 +89,6 @@ spec:
       spec:
         containers:
           - name: agent
-            env:
-              - name: FLEET_CA
-                value: /etc/agent/es-ca/ca.crt
             resources:
               limits:
                 cpu: "500m"
@@ -101,14 +96,6 @@ spec:
               requests:
                 cpu: "250m"
                 memory: 256Mi
-            volumeMounts:
-              - name: es-ca
-                mountPath: /etc/agent/es-ca
-                readOnly: true
-        volumes:
-          - name: es-ca
-            secret:
-              secretName: fleet-server-agent-es-il-observability-elasticsearch-ca
 ---
 # -------------------------------------------------------------------
 # 4. TRAEFIK INGRESSROUTE
