@@ -91,6 +91,9 @@ spec:
       spec:
         containers:
           - name: agent
+            env:
+              - name: FLEET_CA
+                value: /etc/agent/es-ca/ca.crt
             resources:
               limits:
                 cpu: "500m"
@@ -100,13 +103,12 @@ spec:
                 memory: 256Mi
             volumeMounts:
               - name: es-ca
-                mountPath: /etc/ssl/certs/elasticsearch-ca.crt
-                subPath: ca.crt
+                mountPath: /etc/agent/es-ca
                 readOnly: true
         volumes:
           - name: es-ca
             secret:
-              secretName: elasticsearch-es-http-ca-internal
+              secretName: fleet-server-agent-es-il-observability-elasticsearch-ca
 ---
 # -------------------------------------------------------------------
 # 4. TRAEFIK INGRESSROUTE
