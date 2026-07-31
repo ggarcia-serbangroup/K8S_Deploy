@@ -37,7 +37,6 @@ spec:
   elasticsearchRef:
     name: elasticsearch
   config:
-    xpack.fleet.agents.elasticsearch.hosts: ["https://elasticsearch-es-http.il-observability.svc:9200"]
     xpack.fleet.agents.fleet_server.hosts: ["https://fleet-server-agent-http.il-observability.svc:8220"]
     xpack.fleet.outputs:
       - id: default-elasticsearch
@@ -48,12 +47,24 @@ spec:
         ssl:
           certificate_authorities: []
           fingerprint: "79B1D84A5F7CDB66E183EDF4A9D2F4E0A8B8D870A1D6B747BAE4A6B4D2A18340"
+    xpack.fleet.packages:
+      - name: system
+        version: latest
+      - name: elastic_agent
+        version: latest
+      - name: fleet_server
+        version: latest
     xpack.fleet.agentPolicies:
       - name: Fleet Server Policy
         id: eck-fleet-server
         is_default_fleet_server: true
         namespace: default
         unenroll_timeout: 900
+        package_policies:
+          - name: fleet_server-1
+            id: fleet_server-1
+            package:
+              name: fleet_server
 ---
 # -------------------------------------------------------------------
 # 3. FLEET-SERVER 
