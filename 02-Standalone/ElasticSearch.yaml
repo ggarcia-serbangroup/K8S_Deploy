@@ -106,7 +106,7 @@ spec:
         volumes:
           - name: es-ca
             secret:
-              secretName: elasticsearch-es-ca-internal
+              secretName: elasticsearch-es-http-ca-internal
 ---
 # -------------------------------------------------------------------
 # 4. TRAEFIK INGRESSROUTE
