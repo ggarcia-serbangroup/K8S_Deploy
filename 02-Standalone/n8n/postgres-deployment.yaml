@@ -47,6 +47,10 @@ spec:
   volumeClaimTemplates:
   - metadata:
       name: postgres-storage
+      labels:
+        environment: developer
+        project: observability
+        nx_cluster: G5
     spec:
       accessModes: [ "ReadWriteOnce" ]
       storageClassName: "nutanix-cluster-g5-volume"
