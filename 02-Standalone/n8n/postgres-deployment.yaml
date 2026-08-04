@@ -3,6 +3,9 @@ kind: StatefulSet
 metadata:
   name: postgres
   namespace: n8n
+  labels:
+    environment: developer
+    project: n8n
 spec:
   serviceName: "postgres"
   replicas: 1
@@ -56,10 +59,9 @@ kind: Service
 metadata:
   name: postgres
   namespace: n8n
-      labels:
-        app: postgres
-        environment: developer
-        project: n8n
+  labels:
+    environment: developer
+    project: n8n
 spec:
   ports:
   - port: 5432
