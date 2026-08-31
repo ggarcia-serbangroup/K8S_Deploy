@@ -1,4 +1,12 @@
 ## Requisitos
+
+### Desplegar ECK
+1. Actualizar los CRDs del operador para dar soporte a la rama 9.x
+kubectl create -f https://download.elastic.co/downloads/eck/3.4.1/crds.yaml
+
+2. Actualizar el despliegue del operador en el namespace elastic-system
+kubectl apply -f https://download.elastic.co/downloads/eck/3.4.1/operator.yaml
+
 ### Namespace
 ```shell
 kubectl create namespace il-observability
