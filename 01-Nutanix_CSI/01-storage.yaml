@@ -10,14 +10,14 @@ parameters:
   storageContainer: "K8S_Storage"
   storageType: NutanixVolumes
   # Secretos para aprovisionamiento
-  csi.storage.k8s.io/provisioner-secret-name: ntnx-secret
+  csi.storage.k8s.io/provisioner-secret-name: ntnx-g5-secret
   csi.storage.k8s.io/provisioner-secret-namespace: ntnx-system
   # Secretos para la fase de Attach/ControllerPublish (Faltaban estos dos)
-  csi.storage.k8s.io/controller-publish-secret-name: ntnx-secret
+  csi.storage.k8s.io/controller-publish-secret-name: ntnx-g5-secret
   csi.storage.k8s.io/controller-publish-secret-namespace: ntnx-system
   # Secretos para la fase de NodePublish/Mount
-  csi.storage.k8s.io/node-publish-secret-name: ntnx-secret
+  csi.storage.k8s.io/node-publish-secret-name: ntnx-g5-secret
   csi.storage.k8s.io/node-publish-secret-namespace: ntnx-system
   # Secretos para expansión
-  csi.storage.k8s.io/controller-expand-secret-name: ntnx-secret
+  csi.storage.k8s.io/controller-expand-secret-name: ntnx-g5-secret
   csi.storage.k8s.io/controller-expand-secret-namespace: ntnx-system
