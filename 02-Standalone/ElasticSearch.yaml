@@ -79,10 +79,6 @@ spec:
     - name: elasticsearch
   kibanaRef:
     name: kibana
-  http:
-    tls:
-      certificate:
-        secretName: wildcard-illuminati-tls
   deployment:
     replicas: 1
     podTemplate:
