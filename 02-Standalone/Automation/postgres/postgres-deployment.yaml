@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgresql
+  namespace: il-automation
+  labels:
+    environment: developer
+    project: observability
+    nx_cluster: G5
+spec:
+  serviceName: "postgres-service"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+        environment: developer
+        project: observability
+        nx_cluster: G5
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports:
+            - containerPort: 5432
+              name: postgres
+          envFrom:
+            - secretRef:
+                name: postgres-secret
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: /var/lib/postgresql/data
+          resources:
+            limits:
+              cpu: "2"
+              memory: 4Gi
+            requests:
+              cpu: "500m"
+              memory: 1Gi
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-storage
+        labels:
+          environment: developer
+          project: observability
+          nx_cluster: G5
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: "nutanix-cluster-g5-volume"
+        resources:
+          requests:
+            storage: 50Gi
