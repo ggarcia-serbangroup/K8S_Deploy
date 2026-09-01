@@ -15,7 +15,7 @@ spec:
   commonName: "illuminati.dark CA"
   secretName: root-secret-ca
   privateKey:
-    algo: RSA
+    algorithm: RSA
     size: 2048
   issuerRef:
     name: illuminati-ca-issuer
