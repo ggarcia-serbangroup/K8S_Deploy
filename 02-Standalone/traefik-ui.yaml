@@ -3,14 +3,14 @@ kind: IngressRoute
 metadata:
   name: traefik-dashboard-ingress
   namespace: kube-system
-  labels:
-    environment: developer
 spec:
   entryPoints:
-    - traefik
+    - websecure
   routes:
     - match: Host(`traefik-dev.illuminati.dark`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))
       kind: Rule
       services:
         - name: api@internal
           kind: TraefikService
+  tls:
+    secretName: wildcard-illuminati-tls
