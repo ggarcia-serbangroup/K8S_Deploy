@@ -7,12 +7,10 @@ metadata:
     environment: developer
 spec:
   entryPoints:
-    - websecure
+    - traefik
   routes:
     - match: Host(`traefik-dev.illuminati.dark`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))
       kind: Rule
       services:
         - name: api@internal
           kind: TraefikService
-  tls:
-    secretName: wildcard-illuminati-tls
