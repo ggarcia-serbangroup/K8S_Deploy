@@ -1,0 +1,14 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: wildcard-illuminati-tls-cert
+  namespace: il-automation
+spec:
+  secretName: wildcard-illuminati-tls
+  issuerRef:
+    name: ca-issuer
+    kind: ClusterIssuer
+  commonName: "*.illuminati.dark"
+  dnsNames:
+    - "*.illuminati.dark"
+    - "illuminati.dark"
