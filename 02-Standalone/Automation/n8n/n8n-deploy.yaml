@@ -1,0 +1,89 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: n8n
+  namespace: il-automation
+  labels:
+    app: n8n
+    environment: developer
+    project: observability
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: n8n
+  template:
+    metadata:
+      labels:
+        app: n8n
+        environment: developer
+        project: observability
+    spec:
+      containers:
+        - name: n8n
+          image: n8nio/n8n:latest
+          ports:
+            - containerPort: 5678
+          env:
+            - name: DB_TYPE
+              value: postgresdb
+            - name: DB_POSTGRESDB_HOST
+              value: "postgres-service"
+            - name: DB_POSTGRESDB_PORT
+              value: "5432"
+            - name: DB_POSTGRESDB_DATABASE
+              value: "n8n"
+            - name: DB_POSTGRESDB_USER
+              value: "postgres"
+            - name: DB_POSTGRESDB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: n8n-secret
+                  key: db-password
+            - name: N8N_ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: n8n-secret
+                  key: encryption-key
+            - name: WEBHOOK_URL
+              value: "https://n8n-dev.illuminati.dark/"
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: 200m
+              memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: n8n-service
+  namespace: il-automation
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5678
+      targetPort: 5678
+      protocol: TCP
+      name: http
+  selector:
+    app: n8n
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: n8n-ingress
+  namespace: il-automation
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`n8n-dev.illuminati.dark`)
+      kind: Rule
+      services:
+        - name: n8n-service
+          port: 5678
+  tls:
+    secretName: wildcard-illuminati-tls
