@@ -1,3 +1,12 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ntnx-g5-secret
+  namespace: ntnx-system
+type: Opaque
+stringData:
+  key: "IP:9440:Nutanix_storage:password"
+---
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
