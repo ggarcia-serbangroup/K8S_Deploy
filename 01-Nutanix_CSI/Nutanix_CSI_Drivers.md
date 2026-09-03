@@ -36,7 +36,7 @@ helm install nutanix-csi-snapshot nutanix-releases/nutanix-csi-snapshot \
 	--namespace ntnx-system \ 
 	--create-namespace
 	
-# 4.2 Instalación de Nutanix Storage
+# 4.2 Instalación de Nutanix Storage Class (manual, nosotros los haremos con Secret + StorageClass manifest)
 helm install nutanix-csi-storage nutanix-releases/nutanix-csi-storage \ 
 	--namespace ntnx-system \
 	--create-namespace \
